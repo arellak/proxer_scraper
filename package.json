@@ -1,0 +1,27 @@
+{
+  "name": "proxer_scraper",
+  "version": "1.0.0",
+  "description": "Scraper to get the chronic of your proxer account",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arellak/proxer_scraper.git"
+  },
+  "author": "arellak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arellak/proxer_scraper/issues"
+  },
+  "homepage": "https://github.com/arellak/proxer_scraper#readme",
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.22.15",
+    "eslint": "^8.51.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12"
+  }
+}

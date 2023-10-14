@@ -1,0 +1,2 @@
+xxxxxxxxxxx=yyyyyyyyyyy
+joomla_remember_me_xxx=yyy.zzz
