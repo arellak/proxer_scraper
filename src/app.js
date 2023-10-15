@@ -50,6 +50,22 @@ const login = async(username, password) => {
     };
 };
 
+const getGenre = async(link) => {
+    const url = `${baseUrl}${link}`;
+    const response = await fetch(url, {
+        method: "GET",
+    });
+
+    const html = await response.text();
+    const $ = cheerio.load(html);
+
+    const genre = [];
+    $(".genreTag").each((_, element) => {
+        genre.push($(element).text());
+    });
+    return genre;
+};
+
 const getHistory = async(page, token, joomlaToken) => {
     const url = `${baseUrl}/ucp?s=history&p=${page}#top`;
 
@@ -70,24 +86,21 @@ const getHistory = async(page, token, joomlaToken) => {
 
     const history = [];
 
-    rows.each((_, row) => {
+    for(const row of rows){
         const cells = $("td", row);
 
         const anime = $(cells[0]).text();
-        const episode = $(cells[1]).text();
-        const language = $(cells[2]).text();
-        const type = $(cells[3]).text();
+        const link = $("a", cells[0]).attr("href");
         const date = $(cells[4]).text();
-        if(anime === "" || episode === "" || language === "" || type === "" || date === "") return;
+        if(anime === "") continue;
 
-        history.push({
-            anime,
-            episode,
-            language,
-            type,
-            date,
-        });
-    });
+        if(history.some((e) => e.anime === anime)) continue;
+        console.log("Waiting 3 seconds before getting genre...");
+        await sleep(3000);
+        const genre = await getGenre(link);
+
+        history.push({anime, date, genre});
+    }
 
     return history;
 };
@@ -98,12 +111,18 @@ const getFullHistory = async(token, joomlaToken) => {
     let newHistory = await getHistory(page, token, joomlaToken);
 
     while (newHistory.length > 0){
-        console.log("Waiting 2 seconds on page " + page);
-        await sleep(2000);
+        console.log("Waiting 1 second on page " + page);
+        await sleep(1000);
         history = [...history, ...newHistory];
         page++;
         newHistory = await getHistory(page, token, joomlaToken);
     }
+
+    history = history.filter((historyItem, index, self) =>
+        index === self.findIndex((t) => {
+            return (t.anime === historyItem.anime);
+        }),
+    );
 
     return history;
 };
